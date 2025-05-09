@@ -11,11 +11,11 @@ spec:
         node.store.allow_mmap: false
       volumeClaimTemplates:
         - metadata:
-            name: elasticsearch-data # must match the volume mount name
+            name: elasticsearch-data
           spec:
             accessModes:
               - ReadWriteOnce
             resources:
               requests:
-                storage: 10Gi
-            storageClassName: standard # Change this if your cluster uses a different storage class
+                storage: 1Gi
+            storageClassName: standard

@@ -31,4 +31,8 @@ prise de capteur :
 J'ai décidé de prendre des informations en lien avec la bronchopneumopathie chronique obstructive (BPCO), même si cela n'est 
 pas suffisant pour déterminer une exacerbération de cela, comme indiqué dans le papier de recherche.
 
+----- 
+
+# Connexion de la base de donnée a elastic search 
+
 

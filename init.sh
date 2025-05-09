@@ -30,3 +30,9 @@ kubectl create configmap mysql-config --from-env-file=.env
 kubectl create secret generic mysql-secret --from-env-file=.env
 echo "Done."
 
+
+echo " Building python container"
+eval $(minikube docker-env) 
+PASSWORD=$(kubectl get secret quickstart-es-elastic-user -o go-template='{{.data.elastic | base64decode}}')
+
+docker build -t send_py -e PASSWORD="$PASSWORD" api/
