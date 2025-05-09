@@ -1,0 +1,74 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+spec:
+  selector:
+    app: mysql
+  ports:
+    - name: mysql
+      port: 3306
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+spec:
+  selector:
+    matchLabels:
+      app: mysql
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+        - image: mysql:5.6
+          name: mysql
+          envFrom:
+            - configMapRef:
+                name: mysql-config
+            - secretRef:
+                name: mysql-secret
+          ports:
+            - containerPort: 3306
+              name: mysql
+          volumeMounts:
+            - name: initdb
+              mountPath: /docker-entrypoint-initdb.d
+      volumes:
+        - name: initdb
+          configMap:
+            name: mysql-initdb-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-initdb-config
+data:
+  init.sql: |
+    CREATE DATABASE medical_data;
+    USE medical_data;
+
+    CREATE TABLE patients (
+        patient_id INT PRIMARY KEY AUTO_INCREMENT,
+        age_group VARCHAR(7) NOT NULL, -- Ex: "30-40", "40-50"
+        encrypted_info TEXT NOT NULL    -- Données chiffrées (antécédents médicaux, etc.)
+    ) ENGINE=InnoDB;
+
+
+    CREATE TABLE measurements (
+        measurement_id INT PRIMARY KEY AUTO_INCREMENT,
+        patient_id INT NOT NULL,
+        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+        blood_pressure VARCHAR(15),     -- Format ex: "120/80"
+        heart_rate INT,                 -- En battements par minute
+        oxygen_saturation DECIMAL(5,2),-- En pourcentage, ex: 98.50
+        fev1 DECIMAL(5,2),              -- Volume expiratoire maximal par seconde (L)
+        fvc DECIMAL(5,2),               -- Capacité Vitale Forcée (L)
+        FOREIGN KEY (patient_id) REFERENCES patients(patient_id) ON DELETE CASCADE
+    );
+
+    GRANT ALL ON data.* TO 'root'@'%';
