@@ -1,4 +1,4 @@
-from db_connector import *
+from script.api.db_connector import *
 import random
 import time
 
@@ -84,7 +84,6 @@ if __name__ == "__main__":
 
     # load the password from the env
     password = os.getenv("PASSWORD")
-    print("Password is:", password)
     es_client = get_elastic_client(password)
     index_name = "medical_data"
 

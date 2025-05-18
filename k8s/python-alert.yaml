@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: python-alert
+spec:
+  selector:
+    matchLabels:
+      app: python-alert
+  template:
+    metadata:
+      labels:
+        app: python-alert
+    spec:
+      containers:
+        - name: python-alert
+          image: python-alert
+          imagePullPolicy: Never
