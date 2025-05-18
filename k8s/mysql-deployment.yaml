@@ -63,6 +63,7 @@ data:
         measurement_id INT PRIMARY KEY AUTO_INCREMENT,
         patient_id INT NOT NULL,
         timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+        tension INT,
         heart_rate INT,                 -- En battements par minute
         oxygen_saturation DECIMAL(5,2),-- En pourcentage, ex: 98.50
         fev1 DECIMAL(5,2),              -- Volume expiratoire maximal par seconde (L)

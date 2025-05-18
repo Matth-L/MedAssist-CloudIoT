@@ -32,7 +32,7 @@ def create_patient_mysql():
 def insert_data_for_patient(id: int):
 
     heart_rate = random.randint(60, 100)  # Battements par minute
-
+    tension = random.randint(80, 120)
     oxygen_saturation = round(random.uniform(95.0, 100.0), 2)  # % de saturation
     fev1 = round(random.uniform(2.0, 4.5), 2)
     fvc = round(random.uniform(fev1, fev1 + 1.0), 2)
@@ -41,15 +41,15 @@ def insert_data_for_patient(id: int):
 
     insert_query = """
         INSERT INTO measurements    (patient_id, 
-                                    timestamp, 
-                                    blood_pressure, 
+                                    tension,
                                     heart_rate, 
                                     oxygen_saturation, 
-                                    fev1, fvc) 
-        VALUES (%s, %s, %s, %s, %s, %s,%s)
+                                    fev1, 
+                                    fvc) 
+        VALUES (%s, %s,%s, %s, %s,%s)
     """
 
-    values = (id, timestamp, heart_rate, oxygen_saturation, fev1, fvc)
+    values = (id, tension, heart_rate, oxygen_saturation, fev1, fvc)
 
     db = get_db()
     cursor = db.cursor()
@@ -76,7 +76,7 @@ def index_measurements_to_elasticsearch(es_client, index_name="medical_data"):
     measurements = fetch_latest_measurements()
 
     for measurement in measurements:
-        doc_id = measurement["measurement_id"]  # Optional: use MySQL ID
+        doc_id = measurement["measurement_id"]
         es_client.index(index=index_name, id=doc_id, document=measurement)
 
 
@@ -88,14 +88,16 @@ if __name__ == "__main__":
     es_client = get_elastic_client(password)
     index_name = "medical_data"
 
-    # insert data in mysql
-    create_patient_mysql()
-    insert_data_for_patient(1)
+    while True:
+        # insert data in mysql
+        create_patient_mysql()
+        insert_data_for_patient(1)
+        logger.info("Inserted data for patients 1")
 
-    # update data to elastic search
-    if not es_client.indices.exists(index="medical_data"):
-        es_client.indices.create(index="medical_data")
+        # update data to elastic search
+        if not es_client.indices.exists(index="medical_data"):
+            es_client.indices.create(index="medical_data")
 
-    index_measurements_to_elasticsearch(es_client)
-    print("Synced latest measurements.")
-    time.sleep(60)  # Wait 60 seconds
+        index_measurements_to_elasticsearch(es_client)
+        logger.info("Synced latest measurements")
+        time.sleep(10)

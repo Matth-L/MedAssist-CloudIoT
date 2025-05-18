@@ -72,7 +72,6 @@ def get_elastic_client(password):
         "https://quickstart-es-http.default.svc:9200",
         http_auth=("elastic", password),
         verify_certs=False,
-        headers={"Accept": "application/vnd.elasticsearch+json; compatible-with=8"},
     )
 
     try:
