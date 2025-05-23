@@ -1,4 +1,4 @@
-from script.api.db_connector import *
+from db_connector import *
 import random
 import time
 

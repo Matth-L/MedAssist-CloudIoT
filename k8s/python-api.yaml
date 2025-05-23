@@ -18,5 +18,5 @@ spec:
     spec:
       containers:
         - name: python-api
-          image: send_py
+          image: python-api
           imagePullPolicy: Never
